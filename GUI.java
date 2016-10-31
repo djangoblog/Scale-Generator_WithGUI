@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
  *
  */
 
+@SuppressWarnings("serial")
 public class GUI extends JFrame {
 
 	private static String rootNote, scaleType;
@@ -41,7 +42,7 @@ public class GUI extends JFrame {
 
 	private JLabel rootNoteLabel, octaveLabel, instrumentLabel;
 	private JButton setButton, launchButton;
-	private JComboBox rootNoteComboBox, octaveComboBox, instrumentsComboBox;
+	private JComboBox<String> rootNoteComboBox, octaveComboBox, instrumentsComboBox;
 	private JTabbedPane tabbedPane;
 	private Checkbox acousticGuitarCB, pianoCB, sitarCB, violinCB, metallicPadCB, banjoCB, trumpetCB, squareLeadCB,
 			churchOrganCB;
@@ -70,9 +71,9 @@ public class GUI extends JFrame {
 		rootNoteLabel = new JLabel("Select the Root Note");
 		octaveLabel = new JLabel("Select the Octave Number");
 
-		rootNoteComboBox = new JComboBox(notes);// JCombobox is nothing but a drop down list
+		rootNoteComboBox = new JComboBox<String>(notes);// JCombobox is nothing but a drop down list
 		rootNoteComboBox.setEditable(false);
-		octaveComboBox = new JComboBox(octaveNumbers);
+		octaveComboBox = new JComboBox<String>(octaveNumbers);
 		octaveComboBox.setEditable(false);
 
 		scalesGroup = new ButtonGroup();// A ButtonGroup contains numerous JComboBox
@@ -122,7 +123,7 @@ public class GUI extends JFrame {
 			else
 				instrumentNumbers[i] = Integer.toString(i + 1);
 		}
-		instrumentsComboBox = new JComboBox(instrumentNumbers);
+		instrumentsComboBox = new JComboBox<String>(instrumentNumbers);
 
 		setButton = new JButton("Set Instrument");
 		setButton.addActionListener(new ActionListener() { // Add an ActionListener to setButton
