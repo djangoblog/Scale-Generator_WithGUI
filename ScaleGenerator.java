@@ -13,8 +13,9 @@ import javax.sound.midi.*;
  */
 
 public class ScaleGenerator {
-	ScaleGenerator() {
-		GUI gui = new GUI();
+	GUI gui;
+    ScaleGenerator(GUI gui) {
+        this.gui = gui;
 		int rootNote = numericValueOfRootNote(gui.getRootNote(),gui.getOctaveNumber());
 		int scaleNumber = numericValueOfScaleType(gui.getScaleType());
 		int instrument = gui.getInstrumentNumber();
