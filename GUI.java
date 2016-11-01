@@ -29,8 +29,8 @@ import javax.swing.SwingUtilities;
  * the constructor of the ScaleGenerator class is called.
  * 
  * @author Suprit Behera
- * @version 1.0 
- * Created on 31/10/2016 
+ * @version 1.0.2 
+ * Created on 10/31/2016 
  *
  */
 
@@ -346,12 +346,12 @@ public class GUI extends JFrame {
 	}
 
 	public void runScaleGenerator() {
-		new ScaleGenerator();
+		new ScaleGenerator(this);
 	}
 
 	
 	public static void main(String args[]) {
-		// This is done to run the GUI Code in a seperate thread
+		// This is done to run the GUI Code in a separate thread
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override

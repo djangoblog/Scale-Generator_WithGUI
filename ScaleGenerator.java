@@ -7,15 +7,15 @@ import javax.sound.midi.*;
  * It takes all the necessary input values from the GUI Class
  * 
  * @author Suprit Behera
- * @version 1.0 
- * Created on 31/10/2016 
+ * @version 1.0.2 
+ * Created on 10/31/2016 
  *
  */
 
 public class ScaleGenerator {
 	GUI gui;
-    ScaleGenerator(GUI gui) {
-        this.gui = gui;
+	ScaleGenerator(GUI gui) {
+		this.gui = gui;
 		int rootNote = numericValueOfRootNote(gui.getRootNote(),gui.getOctaveNumber());
 		int scaleNumber = numericValueOfScaleType(gui.getScaleType());
 		int instrument = gui.getInstrumentNumber();
