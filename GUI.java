@@ -19,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+
 
 /**
  * GUI is a class which sets up a Graphical User Interface for the user to input
@@ -28,8 +30,11 @@ import javax.swing.SwingUtilities;
  * After the required values have been input and stored in specific variables, 
  * the constructor of the ScaleGenerator class is called.
  * 
+ * The latest version of this project can be found at 
+ * https://github.com/SupritBehera/Scale-Generator_WithGUI
+ * 
  * @author Suprit Behera
- * @version 1.0.2 
+ * @version 1.0.3 
  * Created on 10/31/2016 
  *
  */
@@ -45,17 +50,18 @@ public class GUI extends JFrame {
 	private JComboBox<String> rootNoteComboBox, octaveComboBox, instrumentsComboBox;
 	private JTabbedPane tabbedPane;
 	private Checkbox acousticGuitarCB, pianoCB, sitarCB, violinCB, metallicPadCB, banjoCB, trumpetCB, squareLeadCB,
-			churchOrganCB;
+	churchOrganCB;
 	private CheckboxGroup instrumentsGroup = new CheckboxGroup();
 	private ButtonGroup scalesGroup;
 	private JRadioButton major, naturalMinor, harmonicMinor, ionian, dorian, phyrgian, lydian, myxolydian, aeolian,
-			locrian, blues, minorPentatonic, majorPentatonic, wholeTone, wholeHalfDiminished, halfWholeDiminished;
+	locrian, blues, minorPentatonic, majorPentatonic, wholeTone, wholeHalfDiminished, halfWholeDiminished;
 
 	private String notes[] = { "C (Default)", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 	private String octaveNumbers[] = { "5 (Default)", "1", "2", "3", "4", "6", "7", "8" };
-
+    private int runningTime; //stores the running time for each scale
 	
-	public GUI() {
+
+    public GUI() {
 		initialize();
 		createUI();
 		setVisible(true);
@@ -65,8 +71,8 @@ public class GUI extends JFrame {
 		setLocationRelativeTo(null); // position the window at the center of the screen
 	}
 
-	
-	
+
+
 	private void initialize() {
 		rootNoteLabel = new JLabel("Select the Root Note");
 		octaveLabel = new JLabel("Select the Octave Number");
@@ -95,8 +101,8 @@ public class GUI extends JFrame {
 		wholeHalfDiminished = new JRadioButton("Whole Half Diminished");
 		halfWholeDiminished = new JRadioButton("Half Whole Diminished");
 		JRadioButton radioButtons[] = { major, naturalMinor, harmonicMinor, ionian, dorian, phyrgian, lydian,
-				myxolydian, aeolian, locrian, blues, minorPentatonic, majorPentatonic, wholeTone, wholeHalfDiminished,
-				halfWholeDiminished };
+				myxolydian, aeolian, locrian, blues, minorPentatonic, majorPentatonic, 
+				wholeTone, wholeHalfDiminished,halfWholeDiminished };
 		for (int i = 0; i < radioButtons.length; i++) { // Loop to add all JRadioButton to a ButtonGroup
 			scalesGroup.add(radioButtons[i]);
 
@@ -116,7 +122,8 @@ public class GUI extends JFrame {
 
 		instrumentLabel = new JLabel("Enter Instrument Number");
 
-		String instrumentNumbers[] = new String[128]; // Array to store elements to be displayed in instrumentsComboBox
+		String instrumentNumbers[] = new String[128];// Array to store elements to be displayed 
+		                                             // in instrumentsComboBox 
 		for (int i = 0; i < 128; i++) { // Loop to add numbers from 1-128 at instrumentNumbers[]
 			if (i == 0)
 				instrumentNumbers[0] = "1 (Default)";
@@ -127,80 +134,106 @@ public class GUI extends JFrame {
 
 		setButton = new JButton("Set Instrument");
 		setButton.addActionListener(new ActionListener() { // Add an ActionListener to setButton
-					// Anonymous Class to substantiate interface ActionListener()
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						String tempInstrumentNumber = instrumentsComboBox.getSelectedItem().toString();
-						if (tempInstrumentNumber == "1 (Default)")
-							instrumentNumber = 1;
-						else
-							instrumentNumber = Integer.parseInt(tempInstrumentNumber);
+			// Anonymous Class to substantiate interface ActionListener()
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String tempInstrumentNumber = instrumentsComboBox.getSelectedItem().toString();
+				if (tempInstrumentNumber == "1 (Default)")
+					instrumentNumber = 1;
+				else
+					instrumentNumber = Integer.parseInt(tempInstrumentNumber);
 
-						// Disable all Checkboxes
-						acousticGuitarCB.setEnabled(false);
-						pianoCB.setEnabled(false);
-						sitarCB.setEnabled(false);
-						violinCB.setEnabled(false);
-						trumpetCB.setEnabled(false);
-						squareLeadCB.setEnabled(false);
-						metallicPadCB.setEnabled(false);
-						banjoCB.setEnabled(false);
-						churchOrganCB.setEnabled(false);
-					}
-				});
+				// Disable all Checkboxes
+				acousticGuitarCB.setEnabled(false);
+				pianoCB.setEnabled(false);
+				sitarCB.setEnabled(false);
+				violinCB.setEnabled(false);
+				trumpetCB.setEnabled(false);
+				squareLeadCB.setEnabled(false);
+				metallicPadCB.setEnabled(false);
+				banjoCB.setEnabled(false);
+				churchOrganCB.setEnabled(false);
+			}
+		});
 
 		launchButton = new JButton("Launch !");
 		launchButton.addActionListener(new ActionListener() { // Add an ActionListener to launchButton
-					// Anonymous Class to substantiate interface ActionListener()
+			// Anonymous Class to substantiate interface ActionListener()
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				rootNote = rootNoteComboBox.getSelectedItem().toString();
+				if (rootNote == "C (Default)")
+					rootNote = "C";
+				String tempOctaveNumber = octaveComboBox.getSelectedItem().toString();
+				if (tempOctaveNumber == "5 (Default)")
+					octaveNumber = 5;
+				else
+					octaveNumber = Integer.parseInt(tempOctaveNumber);
+
+				// Loop to iterate through all JRadioButtons to see which one is selected and hence store the
+				// label of that button to scaleType
+				Enumeration<AbstractButton> allScaleRadioButton = scalesGroup.getElements();
+				while (allScaleRadioButton.hasMoreElements()) {
+					JRadioButton tempButton = (JRadioButton) allScaleRadioButton.nextElement();
+					if (tempButton.isSelected()) {
+						scaleType = tempButton.getText();
+					}
+				}
+
+				// This is executed only when JButton setButton has not been clicked
+				// (Clicking setButton disables all the Checkboxes)
+				if (pianoCB.isEnabled()) {
+					Checkbox selectedInstrument = instrumentsGroup.getSelectedCheckbox();
+					String instrumentName = selectedInstrument.getLabel();
+					if (instrumentName == "Grand Piano")
+						instrumentNumber = 1;
+					if (instrumentName == "Acoustic Guitar")
+						instrumentNumber = 25;
+					if (instrumentName == "Sitar")
+						instrumentNumber = 105;
+					if (instrumentName == "Violin")
+						instrumentNumber = 41;
+					if (instrumentName == "Trumpet")
+						instrumentNumber = 57;
+					if (instrumentName == "Banjo")
+						instrumentNumber = 106;
+					if (instrumentName == "Church Organ")
+						instrumentNumber = 20;
+					if (instrumentName == "Metallic Pad")
+						instrumentNumber = 94;
+					if (instrumentName == "Square Lead")
+						instrumentNumber = 81;
+				}
+				launchButton.setEnabled(false); //disable the launchButton till the scale has been completely played
+				runScaleGenerator();
+				int numberOfNotes = ScaleGenerator.getNumberOfNotes(ScaleGenerator.numericValueOfScaleType(getScaleType()));
+				if(numberOfNotes == 9){
+					runningTime = 8500;
+				}
+				if(numberOfNotes == 8){
+					runningTime = 7500;
+				}
+				if(numberOfNotes == 7){
+					runningTime = 6500;
+				}
+				if(numberOfNotes == 6){
+					runningTime = 5500;
+				}
+				
+				// Sets up a timer of (runningTime) milliseconds. 
+				// After the timer counts down to zero, the launchButton is enabled   
+				Timer launchTimer = new Timer(runningTime, new ActionListener() {
+					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						rootNote = rootNoteComboBox.getSelectedItem().toString();
-						if (rootNote == "C (Default)")
-							rootNote = "C";
-						String tempOctaveNumber = octaveComboBox.getSelectedItem().toString();
-						if (tempOctaveNumber == "5 (Default)")
-							octaveNumber = 5;
-						else
-							octaveNumber = Integer.parseInt(tempOctaveNumber);
-
-						// Loop to iterate through all JRadioButtons to see which one is selected and hence store the
-						// label of that button to scaleType
-						Enumeration<AbstractButton> allScaleRadioButton = scalesGroup.getElements();
-						while (allScaleRadioButton.hasMoreElements()) {
-							JRadioButton tempButton = (JRadioButton) allScaleRadioButton.nextElement();
-							if (tempButton.isSelected()) {
-								scaleType = tempButton.getText();
-							}
-						}
-
-						// This is executed only when JButton setButton has not been clicked
-						// (Clicking setButton disables all the Checkboxes)
-						if (pianoCB.isEnabled()) {
-							Checkbox selectedInstrument = instrumentsGroup.getSelectedCheckbox();
-							String instrumentName = selectedInstrument.getLabel();
-							if (instrumentName == "Grand Piano")
-								instrumentNumber = 1;
-							if (instrumentName == "Acoustic Guitar")
-								instrumentNumber = 25;
-							if (instrumentName == "Sitar")
-								instrumentNumber = 105;
-							if (instrumentName == "Violin")
-								instrumentNumber = 41;
-							if (instrumentName == "Trumpet")
-								instrumentNumber = 57;
-							if (instrumentName == "Banjo")
-								instrumentNumber = 106;
-							if (instrumentName == "Church Organ")
-								instrumentNumber = 20;
-							if (instrumentName == "Metallic Pad")
-								instrumentNumber = 94;
-							if (instrumentName == "Square Lead")
-								instrumentNumber = 81;
-						}
-
-						runScaleGenerator();
+						launchButton.setEnabled(true);
+						
 					}
 				});
+				launchTimer.setRepeats(false); // Don't reset the timer once it counts down to zero
+				launchTimer.start(); // Start the countdown
+			}
+		});
 
 	}
 
@@ -349,7 +382,7 @@ public class GUI extends JFrame {
 		new ScaleGenerator(this);
 	}
 
-	
+
 	public static void main(String args[]) {
 		// This is done to run the GUI Code in a separate thread
 		SwingUtilities.invokeLater(new Runnable() {
