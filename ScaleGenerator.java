@@ -2,12 +2,16 @@
 import javax.sound.midi.*;
 
 /**
- * The ScaleGenerator class plays the notes of the input scale type with the root note and instrument of the user's choice.
+ * The ScaleGenerator class plays the notes of the input scale type with the root note and instrument 
+ * of the user's choice. 
  * The scale is played both in ascending and descending order with a difference of four beats between each note
  * It takes all the necessary input values from the GUI Class
  * 
+ * The latest version of this project can be found at 
+ * https://github.com/SupritBehera/Scale-Generator_WithGUI
+ * 
  * @author Suprit Behera
- * @version 1.0.2 
+ * @version 1.0.3 
  * Created on 10/31/2016 
  *
  */
@@ -24,7 +28,7 @@ public class ScaleGenerator {
 			//getNumberOfNotes(int) returns -1 if input scale type number does not match.
 			System.err.println("Wrong Scale Input"); 
 		else 
-			run(rootNote,scaleNumber,numberOfNotes,instrument);
+			run(rootNote,scaleNumber,numberOfNotes,instrument);;
 	}
 	
 	// Function to generate a note given the attributes associated to it.
@@ -33,8 +37,9 @@ public class ScaleGenerator {
 		try {
 			ShortMessage a = new ShortMessage(); 
 			a.setMessage(comd, chan, one, two);
-			// comd (command), for eg. 144 for note on, 128 for note off, 172 for changing instrument, etc.; chan(channel)
-			// one and two depend on the command type. Tick is the beat number when the note is played.
+			// comd (command), for eg. 144 for note on, 128 for note off, 172 for changing instrument, etc.; 
+			// chan(channel), one and two depend on the command type. 
+			// Tick is the beat number when the note is played.
 			event = new MidiEvent(a,tick);     
 		} catch (Exception ex) {
 			
@@ -63,11 +68,13 @@ public class ScaleGenerator {
 				track.add(makeEvent(144,1,note,100,beat)); // Play the note.     
 				track.add(makeEvent(128,1,note,100,beat+2)); // Stop playing the note.
 				if (i == limit) 
-					finalNote = note; // In the last iteration, note will contain the value of the last note of the scale.
+					finalNote = note; // In the last iteration, note will contain 
+				                      // the value of the last note of the scale.
 			}
 			
-			int startingNote = finalNote; // In descending scale, the first note played is the last note of the scale.
-			//System.out.println(startingNote); // For testing purposes.
+			int startingNote = finalNote; // In descending scale, the first note played 
+			                              // is the last note of the scale.
+			
 			for (int j = limit; j >= 4; j-=4) { // Loop for playing the descending scale
 				beat = beat + 4;
 				startingNote = startingNote + (startingNote - callCorrectMethod(j, startingNote, scaleNumber)); 
@@ -118,7 +125,7 @@ public class ScaleGenerator {
 		
 	}
 	
-	public int numericValueOfScaleType(String scaleType){
+	public static int numericValueOfScaleType(String scaleType){
 		int scaleNumber = 1;
 		if(scaleType.equals("Major"))
 			scaleNumber = 1;
@@ -153,11 +160,9 @@ public class ScaleGenerator {
 		if(scaleType.equals("Half Whole Diminished"))
 			scaleNumber = 16;
 		return scaleNumber;
-		
-		
 	}
-	
-	public int getNumberOfNotes(int scaleNumber) { // returns the number of notes in the specific input scale type
+
+	public static int getNumberOfNotes(int scaleNumber) { // returns the number of notes in the specific input scale type
 		if (scaleNumber <= 10) 
 			return 8;
 		if (scaleNumber == 11 || scaleNumber == 14) 
