@@ -164,6 +164,7 @@ public class GUI extends JFrame {
 
 		setBPMLabel = new JLabel("Set the BPM");
 		setBPMTextField = new JTextField(6); //setBPMTextField is 6 colums wide
+		setBPMTextField.setHorizontalAlignment(JTextField.CENTER); // Align text to the center
 		setBPMTextField.setText("120");
 		// Remove the existing text in setBPMTextField (i.e. "120") on clicking it
 		setBPMTextField.addFocusListener(new FocusListener() {
