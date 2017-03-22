@@ -7,6 +7,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Enumeration;
 
 import javax.swing.AbstractButton;
@@ -18,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -34,7 +39,7 @@ import javax.swing.Timer;
  * https://github.com/SupritBehera/Scale-Generator_WithGUI
  * 
  * @author Suprit Behera
- * @version 1.0.3 
+ * @version 1.1.0 
  * Created on 10/31/2016 
  *
  */
@@ -43,9 +48,9 @@ import javax.swing.Timer;
 public class GUI extends JFrame {
 
 	private static String rootNote, scaleType;
-	private static int octaveNumber, instrumentNumber;
+	private static int octaveNumber, instrumentNumber, beatsPerMinute;
 
-	private JLabel rootNoteLabel, octaveLabel, instrumentLabel;
+	private JLabel rootNoteLabel, octaveLabel, instrumentLabel, setBPMLabel;
 	private JButton setButton, launchButton;
 	private JComboBox<String> rootNoteComboBox, octaveComboBox, instrumentsComboBox;
 	private JTabbedPane tabbedPane;
@@ -55,10 +60,11 @@ public class GUI extends JFrame {
 	private ButtonGroup scalesGroup;
 	private JRadioButton major, naturalMinor, harmonicMinor, ionian, dorian, phyrgian, lydian, myxolydian, aeolian,
 	locrian, blues, minorPentatonic, majorPentatonic, wholeTone, wholeHalfDiminished, halfWholeDiminished;
-
+	private JTextField setBPMTextField;
 	private String notes[] = { "C (Default)", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 	private String octaveNumbers[] = { "5 (Default)", "1", "2", "3", "4", "6", "7", "8" };
     private int runningTime; //stores the running time for each scale
+    private int timeForOneNote; //stores the time taken in milliseconds for one note to play
 	
 
     public GUI() {
@@ -156,7 +162,33 @@ public class GUI extends JFrame {
 			}
 		});
 
-		launchButton = new JButton("Launch !");
+		setBPMLabel = new JLabel("Set the BPM");
+		setBPMTextField = new JTextField(6); //setBPMTextField is 6 colums wide
+		setBPMTextField.setText("120");
+		// Remove the existing text in setBPMTextField (i.e. "120") on clicking it
+		setBPMTextField.addFocusListener(new FocusListener() {
+		    public void focusGained(FocusEvent e) {
+		        setBPMTextField.setText("");
+		    }
+
+		    public void focusLost(FocusEvent e) {
+		        
+		    }
+		});
+		// To allow only numbers (upto 3 digits) to be entered in setBPMTextField
+		setBPMTextField.addKeyListener(new KeyAdapter() {
+		   public void keyTyped(KeyEvent e) {
+		      char c = e.getKeyChar();
+		      if(setBPMTextField.getText().length() > 2){
+		    	  e.consume();  // ignore event
+		      }
+		      else if ( ((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
+		         e.consume();  // ignore event
+		      }
+		   }
+		});
+		
+		launchButton = new JButton(" Launch ! ");
 		launchButton.addActionListener(new ActionListener() { // Add an ActionListener to launchButton
 			// Anonymous Class to substantiate interface ActionListener()
 			@Override
@@ -204,21 +236,14 @@ public class GUI extends JFrame {
 					if (instrumentName == "Square Lead")
 						instrumentNumber = 81;
 				}
+				
+				beatsPerMinute = Integer.parseInt(setBPMTextField.getText());
+				int numberOfNotes = ScaleGenerator.getNumberOfNotes(ScaleGenerator.numericValueOfScaleType(getScaleType()));
+				timeForOneNote = (int)((60.0/beatsPerMinute) * Math.pow(10,3));  
+				runningTime = timeForOneNote * ((2 * numberOfNotes) - 1);
+				
 				launchButton.setEnabled(false); //disable the launchButton till the scale has been completely played
 				runScaleGenerator();
-				int numberOfNotes = ScaleGenerator.getNumberOfNotes(ScaleGenerator.numericValueOfScaleType(getScaleType()));
-				if(numberOfNotes == 9){
-					runningTime = 8500;
-				}
-				if(numberOfNotes == 8){
-					runningTime = 7500;
-				}
-				if(numberOfNotes == 7){
-					runningTime = 6500;
-				}
-				if(numberOfNotes == 6){
-					runningTime = 5500;
-				}
 				
 				// Sets up a timer of (runningTime) milliseconds. 
 				// After the timer counts down to zero, the launchButton is enabled   
@@ -352,9 +377,17 @@ public class GUI extends JFrame {
 		panelTab4.setLayout(new GridBagLayout());
 		GridBagConstraints c4 = new GridBagConstraints();
 		c4.anchor = GridBagConstraints.LINE_START;
+		c4.fill = GridBagConstraints.HORIZONTAL; // This is required to enable launchButton to occupy two columns
 		c4.insets = new Insets(3, 5, 3, 5);
 		c4.gridx = 0;
 		c4.gridy = 0;
+		panelTab4.add(setBPMLabel, c4);
+		c4.gridx = 1;
+		c4.gridy = 0;
+		panelTab4.add(setBPMTextField, c4);
+		c4.gridx = 0;
+		c4.gridy = 1;
+		c4.gridwidth = 2; // Occupy two columns
 		panelTab4.add(launchButton, c4);
 		tabbedPane.add("Run", panelTab4);
 
@@ -376,6 +409,10 @@ public class GUI extends JFrame {
 
 	int getInstrumentNumber() {
 		return instrumentNumber;
+	}
+	
+	int getBeatsPerMinute(){
+		return beatsPerMinute;
 	}
 
 	public void runScaleGenerator() {
