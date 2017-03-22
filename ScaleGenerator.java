@@ -11,7 +11,7 @@ import javax.sound.midi.*;
  * https://github.com/SupritBehera/Scale-Generator_WithGUI
  * 
  * @author Suprit Behera
- * @version 1.0.3 
+ * @version 1.1.0 
  * Created on 10/31/2016 
  *
  */
@@ -23,6 +23,7 @@ public class ScaleGenerator {
 		int rootNote = numericValueOfRootNote(gui.getRootNote(),gui.getOctaveNumber());
 		int scaleNumber = numericValueOfScaleType(gui.getScaleType());
 		int instrument = gui.getInstrumentNumber();
+		//int beatsPerMinute = gui.getBeatsPerMinute();
 		int numberOfNotes = getNumberOfNotes(scaleNumber); // Store the number of notes in the required scale
 		if (numberOfNotes == -1) 
 			//getNumberOfNotes(int) returns -1 if input scale type number does not match.
@@ -88,8 +89,8 @@ public class ScaleGenerator {
 			
 			sequencer.setSequence(seq);
 			sequencer.start();
-			// Set the BPM (Beats Per Minute) while determines the speed with which it is played. 
-			sequencer.setTempoInBPM(120); 
+			// Set the BPM (Beats Per Minute) which determines the number of notes played in a minute
+			sequencer.setTempoInBPM(gui.getBeatsPerMinute()); 
 		} catch(Exception ex) {
 			
 		};
