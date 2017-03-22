@@ -9,7 +9,7 @@ A program that plays numerous western musical scales and uses a GUI for inputtin
 
 ![](https://github.com/SupritBehera/Scale-Generator_WithGUI/blob/master/Screenshots/Tab%203.PNG)
 
-![](https://github.com/SupritBehera/Scale-Generator_WithGUI/blob/master/Screenshots/Tab4.PNG)
+![](https://github.com/SupritBehera/Scale-Generator_WithGUI/blob/master/Screenshots/Tab%204.PNG)
 
 ## Changelogs
 Changes in version 1.1.0 :
